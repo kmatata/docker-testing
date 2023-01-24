@@ -1,0 +1,37 @@
+services:
+  tailsytlye:
+    image: node:16.13.0-alpine
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npx tailwindcss --watch"
+    restart: always    
+    volumes:
+      - .:/usr/src/app/
+
+  webapp:
+    build: 
+      context: ./
+      dockerfile: dockerfile     
+    restart: always
+    command: ["db:5432","--","python", "/usr/src/app/manage.py", "runserver", "0.0.0.0:8000"]
+    volumes: 
+      - .:/usr/src/app/  
+    ports:
+      - 8000:8000  
+    environment:
+      - DJANGO_SETTINGS_MODULE=chatApp.settings.prod 
+      - POSTGRES_DB=chat_db
+      - POSTGRES_USER=chat_db_user
+      - POSTGRES_PASSWORD=bernie101          
+
+  db:
+    image: postgres:14.6    
+    restart: always    
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    environment:        
+      - POSTGRES_DB=chat_db
+      - POSTGRES_USER=chat_db_user
+      - POSTGRES_PASSWORD=bernie101  
+
+volumes:
+  postgres-db:

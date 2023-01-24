@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-white">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css" />        
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>    
+    <title>Document</title>
+</head>
+<body>
+    <form action="" method="post" role="form">
+        {% csrf_token %}
+        <div class="hero min-h-screen bg-base-200">
+            <div class="hero-content flex-col lg:flex-row">
+            <div class="text-center lg:text-left lg:mx-[300px]">
+                <h1 class="text-5xl font-bold">Signup to use simple chat</h1>            
+            </div>
+            <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100 lg:-mx-[300px]">
+                <div class="card-body">
+                <div class="form-control">                   
+                    {{ form.email }}
+                </div>
+                <div class="form-control">                    
+                    {{ form.username }}
+                </div>
+                <div class="form-control">                    
+                    {{ form.password }}
+                </div>
+                <div class="form-control">                   
+                    {{ form.confirm_password }}
+                    <label class="label">
+                    <a href="#" class="label-text-alt link link-hover">Login</a>
+                    </label>
+                </div>
+                <div>
+                    <span class="text-red">{{ form.errors }}</span>
+                </div>
+                <div class="form-control mt-6">
+                    <button type="submit" name="action" class="btn btn-primary">SIGN-UP</button>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </form>
+</body>

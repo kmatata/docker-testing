@@ -1,0 +1,75 @@
+services:
+  tailsytlye:
+    image: node:16.13.0-alpine
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npx tailwindcss --watch"
+    restart: always    
+    volumes:
+      - .:/usr/src/app/
+
+  webapp:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.prod
+    restart: always    
+    command: db:5432 -- gunicorn --chdir /home/app/web chatApp.wsgi:application --bind 0.0.0.0:8000
+    expose:
+      - 8000
+    environment:
+      - DJANGO_SETTINGS_MODULE=chatApp.settings.prod 
+      - POSTGRES_DB=chat_db
+      - POSTGRES_USER=chat_db_user
+      - POSTGRES_PASSWORD=bernie101  
+    volumes:
+      - ./chatApp/static:/home/app/web/chatApp/static
+      - ./chatApp/media:/home/app/web/chatApp/media
+    depends_on:
+      - db
+      - cache        
+
+  db:
+    image: postgres:14.6    
+    restart: always    
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    environment:        
+      - POSTGRES_DB=chat_db
+      - POSTGRES_USER=chat_db_user
+      - POSTGRES_PASSWORD=bernie101 
+
+  cache:
+    image: redis:7.0.4
+    restart: always
+    volumes:
+      - cache_data:/data
+  
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    volumes:            
+      - ./:/home/app/web
+    depends_on:
+      - webapp
+  
+  daphne:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.prod       
+    command: ["db:5432", "--","daphne", "-u", "/home/app/web/chatApp/daphne.sock","chatApp.asgi:application"]
+    restart: always
+    volumes:
+      - .:/home/app/web
+    environment:
+      - DJANGO_SETTINGS_MODULE=chatApp.settings.prod
+      - POSTGRES_DB=chat_db
+      - POSTGRES_USER=chat_db_user
+      - POSTGRES_PASSWORD=bernie101
+    depends_on:
+      - db
+      - cache
+ 
+
+volumes:
+  postgres-db:
+  cache_data:

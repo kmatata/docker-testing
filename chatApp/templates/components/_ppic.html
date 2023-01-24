@@ -1,0 +1,17 @@
+{% load thumbnail %}
+{% load static %}
+
+        
+
+<div class="avatar z-50 relative flex items-center p-1 ">
+    <div  class="w-[55px] rounded-full ring-2 ring-white m-2 brightness-100 backdrop-contrast-125">                
+        {% if ppic %}
+            <a href="{{ ppic.url }}"><img src="{% thumbnail ppic 300x0 quality=100 sharpen=True crop='smart' %}" /></a>                
+        {% else %}
+            <a class="mx-auto sm:mx-0 sm:shrink-0" href=""><img src="{% static 'img/no_avatar.jpg' %}" /></a>                
+        {% endif %} 
+    </div>
+    <span class="block ml-2 font-bold text-gray-600 brightness-200 backdrop-contrast-200">{{ usr.username }}</span>
+    <span class="absolute w-3 h-3 bg-green-600 rounded-full left-14 top-3">
+    </span>
+</div>

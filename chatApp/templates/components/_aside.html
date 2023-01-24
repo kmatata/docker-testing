@@ -1,0 +1,24 @@
+{% load static %}
+{% load thumbnail %}
+
+{% for receiver in users %}
+<li x-data="{ usrnme: '{{ receiver.username }}' }" @click.prevent="sendData({ action: 'Change group', data:{groupName: usrnme}}, myWebSocket)" id="usrmsg" name="{{ receiver.username }}" href=""  class="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out bg-gray-100 border-b border-gray-300 cursor-pointer focus:outline-none">                                        
+    {% if receiver.profile.picture %}
+        <a href="{{ receiver.profile.picture.url }}"><img class="mask mask-circle w-[50px] h-[50px]" src="{% thumbnail receiver.profile.picture 300x0 crop='smart' sharpen=True %}" /></a>                
+    {% else %}
+        <a href=""><img class="object-cover w-[45px] rounded-full" src="{% static 'img/no_avatar.jpg' %}" /></a>                
+    {% endif %}                          
+    <div class="w-full pb-1">
+        <div class="flex justify-between inline">
+            <span class="inline ml-2 font-semibold text-gray-600">{{ receiver.username }}</span>
+            <span class="ml-2 text-sm text-gray-600"></span>
+        </div>
+        <span class="block ml-2 text-sm text-gray-600"></span>
+    </div>
+</li>
+{% endfor %}
+
+
+
+
+

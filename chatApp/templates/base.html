@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" class="dark bg-black backdrop-contrast-200">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css" />    
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>    
+    <title>Document</title>
+</head>
+<body>
+    <div class="container mx-auto">
+        <div class="border rounded grid grid-cols-1 md:grid-cols-3">
+            <div class="border-r border-white col-span-1 block min-w-screen">
+                <h2 class="my-2 mb-2 ml-5 text-lg text-white">chats</h2>                        
+                <div class="mx-3 my-3">                        
+                    <div class="relative text-black">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            viewBox="0 0 24 24" class="w-6 h-6 text-black">
+                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </span>
+                        <input type="search" class="block w-full py-2 pl-10 bg-gray-100 rounded outline-none" name="search" placeholder="Search" required />
+                    </div>
+                </div>
+                
+                <ul id="aside" class="overflow-auto h-[32rem]">
+                    <div class="flex flex-row flex-shrink-0 tabs tabs-boxed justify-between backdrop-contrast-200 brightness-200 bg-gradient-to-r from-cyan-500/10 via-cyan-200/10 to-teal-300/10">
+                        <a x-data @click.prevent="sendData({ action: 'alldms'}, myWebSocket)" id="alldms" href="" class="inline w-1/2 rounded-md backdrop-contrast-200 bg-gradient-to-r from-cyan-500/50 via-cyan-200/20 to-teal-300/80 text-white  tab tab-bodered">chats</a>
+                        <a x-data @click.prevent="sendData({ action: 'recentdms'}, myWebSocket)" id="recentdms" href="" class="inline w-1/2 rounded-md backdrop-contrast-200 bg-gradient-to-r from-teal-300/70 via-cyan-200/20 to-cyan-500/50 text-white tab tab-bodered">recents</a>
+                    </div>
+                    <ul id="dmusers" >
+                        {% include page %}
+                    </ul>
+                </ul>
+            </div>
+            <div id="main" class="hidden col-span-1 md:col-span-2 md:block">                    
+                {% include 'components/_chat.html' %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const myWebSocket = new WebSocket('ws://' + window.location.host + '/ws/dm/');
+		const sendData = (message,WebSocket) => {
+			WebSocket.send(JSON.stringify(message))
+		}
+		
+		myWebSocket.addEventListener('message',(e) => {
+			//parse the data received
+			const data = JSON.parse(e.data);
+			// renders the html received from the consumer
+			selector = document.querySelector(data.selector)			
+			if (data.append) {
+				selector.innerHTML += data.html;
+			} else {
+			selector.innerHTML = data.html;
+			}
+			history.pushState({}, '', data.url)
+		})
+    </script>
+</body>
+
+</html>
